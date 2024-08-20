@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Block Cipher Encryption/Decryption</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        padding-top: 50px;
+      }
+      .container {
+        max-width: 600px;
+        padding: 30px;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      .result {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center mb-4">Block Cipher Encryption/Decryption</h1>
+      <form id="cipherForm">
+        <div class="form-group">
+          <label for="key">Key (16, 24, or 32 bytes):</label>
+          <input type="text" class="form-control" id="key" placeholder="Enter key" required />
+        </div>
+        <div class="form-group">
+          <label for="mode">Mode:</label>
+          <select class="form-control" id="mode">
+            <option value="ECB">ECB</option>
+            <option value="CBC">CBC</option>
+            <option value="CFB">CFB</option>
+            <option value="OFB">OFB</option>
+            <option value="CTR">CTR</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="action">Action:</label>
+          <select class="form-control" id="action">
+            <option value="encrypt">Encrypt</option>
+            <option value="decrypt">Decrypt</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="inputText">Input Text:</label>
+          <textarea class="form-control" id="inputText" rows="4" placeholder="Enter plaintext or ciphertext" required></textarea>
+        </div>
+        <button type="button" class="btn btn-primary btn-block" id="submitButton">Submit</button>
+      </form>
+      <div class="result">
+        <h2 class="text-center mt-4">Result:</h2>
+        <p id="resultText" class="text-center"></p>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("submitButton").addEventListener("click", async () => {
+        const key = document.getElementById("key").value;
+        const mode = document.getElementById("mode").value;
+        const action = document.getElementById("action").value;
+        const inputText = document.getElementById("inputText").value;
+
+        if (!key || !inputText) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        if (key.length !== 16 && key.length !== 24 && key.length !== 32) {
+          alert("Invalid key length. Key must be 16, 24, or 32 bytes long.");
+          return;
+        }
+
+        const response = await fetch("/api", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            key,
+            mode,
+            action,
+            inputText,
+          }),
+        });
+
+        const result = await response.json();
+        document.getElementById("resultText").innerText = result.output;
+      });
+    </script>
+  </body>
+</html>
